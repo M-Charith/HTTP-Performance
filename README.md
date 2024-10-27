@@ -1,195 +1,120 @@
 # HTTP-Performance
 
+---
 
-```markdown
-# P4-Mininet Setup for Basic and Star Topologies
+# P4-Mininet Network Setup and Request Testing
 
-This project involves setting up P4-Mininet on a Hypervisor like Oracle VirtualBox and running basic client-server interactions using fixed IP addresses for hosts.
+This project sets up a basic and star topology using **P4-Mininet** on a hypervisor like Oracle VirtualBox. It includes instructions for installing the environment, setting up network requests between hosts, and observing request-response behavior with Mininet.
 
-## Prerequisites
+## Installation
+1. Install P4-Mininet on a hypervisor (e.g., Oracle VirtualBox).
+2. Clone or copy the `basic` and `star` folders, placing them in the following directory:
+   ```bash
+   /home/p4/tutorials/exercises
+   ```
+3. The IP addresses of hosts (`h1`, `h2`, and `h3`) are fixed for simplicity. The IP addresses used are:
+   - `h1`: 10.0.1.1
+   - `h2`: 10.0.1.2
+   - `h3`: 10.0.1.3
 
-- **P4-Mininet** installed on a Hypervisor (Oracle VirtualBox recommended)
-- **Wireshark** for capturing and recording network traffic
-- **Mininet** pre-installed with P4 language support
+> **Note:** IPs are hardcoded in `client.py`, `server.py`, and `cache.py` in both the `basic` and `star` setups to avoid entering IP addresses manually.
 
-## Installation and Setup
-
-1. **Install P4-Mininet** on a Hypervisor like Oracle VirtualBox.
-2. Copy the `basic` and `star` folders and place them in `/home/p4/tutorials/exercises`.
-
-## Running the Requests on the Basic Setup
-
+## Running the Basic Setup
 1. Open a terminal and navigate to the `basic` directory:
    ```bash
    cd /home/p4/tutorials/exercises/basic
    ```
-2. Run the following commands to clean and run the setup:
+2. Clean up previous configurations:
    ```bash
    make clean
+   ```
+3. Run the Mininet simulation:
+   ```bash
    make run
    ```
-3. You will be in the Mininet prompt. Now, open terminals for Host 1 and Host 2:
-   ```bash
-   xterm h1
-   xterm h2
-   ```
+4. You will now be in the Mininet prompt.
 
-### Commands to Run on h2's Terminal:
+5. **Open Host Terminals:**
+   - Start terminals for each host using:
+     ```bash
+     xterm h1
+     xterm h2
+     ```
 
-1. Run the following command to set up the ARP:
-   ```bash
-   bash h2-arp.sh
-   ```
-   (Run this every time after `make` is executed.)
+6. **Set up ARP and Run the Servers:**
+   - On **h2's terminal**:
+     ```bash
+     bash h2-arp.sh       # Run once every time you run `make`
+     python server.py
+     ```
+   - On **h1's terminal**:
+     ```bash
+     bash h1-arp.sh       # Run once every time you run `make`
+     python client.py
+     ```
 
-2. Start the server:
-   ```bash
-   python server.py
-   ```
-
-### Commands to Run on h1's Terminal:
-
-1. Run the following command to set up the ARP:
-   ```bash
-   bash h1-arp.sh
-   ```
-   (Run this every time after `make` is executed.)
-
-2. Run the client to make requests:
-   ```bash
-   python client.py
-   ```
-
-### Sample HTTP Requests
-
-Run the following HTTP requests from h1's terminal to interact with the server:
-
-- **PUT request:**
-   ```bash
-   "PUT /assignment2/key1/val1 HTTP/1.1"
-   ```
-
-- **GET request:**
-   ```bash
-   "GET /assignment2?request=key1 HTTP/1.1"
-   ```
-
-- **DELETE request:**
-   ```bash
-   "DELETE /assignment2/key1 HTTP/1.1"
-   ```
-
-> Note: Requests should be enclosed in quoted characters as shown above.
-
-### Responses
-
-- **Connection OK:**
-   ```
-   HTTPS/1.1 200 OK
-   ```
-
-- **Bad Request:**
-   ```
-   HTTPS/1.1 400 Bad Request
-   ```
-
-- **Not Found:**
-   ```
-   HTTPS/1.1 404 Not Found
-   ```
-
-## Running the Requests on the Star Setup
-
+## Running the Star Setup
 1. Open a terminal and navigate to the `star` directory:
    ```bash
    cd /home/p4/tutorials/exercises/star
    ```
-2. Run the following commands to clean and run the setup:
+2. Clean up previous configurations:
    ```bash
    make clean
+   ```
+3. Run the Mininet simulation:
+   ```bash
    make run
    ```
-3. You will be in the Mininet prompt. Now, open terminals for Host 1, Host 2, and Host 3:
-   ```bash
-   xterm h1
-   xterm h2
-   xterm h3
-   ```
+4. You will now be in the Mininet prompt.
 
-### Commands to Run on h2's Terminal:
+5. **Open Host Terminals:**
+   - Start terminals for each host using:
+     ```bash
+     xterm h1
+     xterm h2
+     xterm h3
+     ```
 
-1. Run the following command to set up the ARP:
-   ```bash
-   bash h2-arp.sh
-   ```
-   (Run this every time after `make` is executed.)
+6. **Set up ARP and Run the Servers:**
+   - On **h2's terminal**:
+     ```bash
+     bash h2-arp.sh       # Run once every time you run `make`
+     python cache.py
+     ```
+   - On **h3's terminal**:
+     ```bash
+     bash h3-arp.sh       # Run once every time you run `make`
+     python server.py
+     ```
+   - On **h1's terminal**:
+     ```bash
+     bash h1-arp.sh       # Run once every time you run `make`
+     python client.py
+     ```
 
-2. Start the cache:
-   ```bash
-   python cache.py
-   ```
+## Example Requests
+Requests are sent from `h1`'s terminal to interact with the server on `h2` or `h3`. Use the following commands:
 
-### Commands to Run on h3's Terminal:
+```plaintext
+"PUT /assignment2/key1/val1 HTTP/1.1"
+"GET /assignment2?request=key1 HTTP/1.1"
+"DELETE /assignment2/key1 HTTP/1.1"
+```
 
-1. Run the following command to set up the ARP:
-   ```bash
-   bash h3-arp.sh
-   ```
+> **Note**: Enclose requests in quotes as shown above.
 
-2. Start the server:
-   ```bash
-   python server.py
-   ```
+## Response Status Codes
+After each request, `h1`’s terminal will display one of the following responses:
 
-### Commands to Run on h1's Terminal:
+- **Connection OK**: `"HTTPS/1.1 200 OK"`
+- **Bad Request**: `"HTTPS/1.1 400 Bad Request"`
+- **Not Found**: `"HTTPS/1.1 404 Not Found"`
 
-1. Run the following command to set up the ARP:
-   ```bash
-   bash h1-arp.sh
-   ```
+> Timestamps for each interaction are recorded with Wireshark for further analysis.
 
-2. Run the client to make requests:
-   ```bash
-   python client.py
-   ```
+## Troubleshooting
+- Ensure all ARP setup scripts are run (`h1-arp.sh`, `h2-arp.sh`, `h3-arp.sh`) each time after running `make`.
+- If Mininet terminals don’t open, check the installation path and permissions.
 
-### Sample HTTP Requests
-
-Run the following HTTP requests from h1's terminal to interact with the server:
-
-- **PUT request:**
-   ```bash
-   "PUT /assignment2/key1/val1 HTTP/1.1"
-   ```
-
-- **GET request:**
-   ```bash
-   "GET /assignment2?request=key1 HTTP/1.1"
-   ```
-
-> Note: Requests should be enclosed in quoted characters as shown above.
-
-### Responses
-
-- **Connection OK:**
-   ```
-   HTTPS/1.1 200 OK
-   ```
-
-- **Bad Request:**
-   ```
-   HTTPS/1.1 400 Bad Request
-   ```
-
-- **Not Found:**
-   ```
-   HTTPS/1.1 404 Not Found
-   ```
-
-## Wireshark Monitoring
-
-Wireshark can be used to capture and record the request and response communication between hosts.
-
----
-
-This README file should provide clear instructions for installing, setting up, and running the project in both the basic and star topologies.
+--- 
